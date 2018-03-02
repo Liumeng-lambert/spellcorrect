@@ -10,16 +10,9 @@
 
 class LogPrinter{
 public:
-	static LogPrinter * inst(){  
-        if (NULL != _instance){  
-           return _instance; 
-        }  
-		_instance = new LogPrinter();
-		return _instance;
-    }	
 	static void export_log(std::string info, std::string log_path);
 private:
-	static LogPrinter*  _instance;
+	static LogPrinter*  _p_instance;
 	static std::string get_current_time();
 };
 

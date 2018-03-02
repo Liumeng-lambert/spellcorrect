@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include "dictionary.hpp"
-
+#include "log.hpp"
 namespace searchEngine{
 namespace spellCorrect{
 DictProducer::DictProducer(const std::string& dir)
@@ -19,7 +19,7 @@ DictProducer::DictProducer(const std::string& dir)
 	struct dirent* dir_info;
 	DIR * p_dir = opendir(dir.c_str());
 	if(NULL == p_dir){
-		LogPrinter::inst()->export_log("error to open dir", "log/log.txt");
+		LogPrinter::export_log("error to open dir", "log/log.txt");
 		exit(EXIT_FAILURE);
 	}
 	while(dir_info = readdir(p_dir)) {
@@ -57,7 +57,7 @@ DictProducer::DictProducer(const std::string& dir, SplitTool* splitTool)
 }
 
 void DictProducer::build_dict(){
-	LogPrinter::inst()->export_log("build dictionary", "log/log.txt");
+	LogPrinter::export_log("build dictionary", "log/log.txt");
 	for(auto i : _files) {
 		/*open every file in /data */
 		std::string path = _dir + "/" + i;
@@ -65,7 +65,7 @@ void DictProducer::build_dict(){
 		std::ifstream istrm(path, std::ios::binary);
 		if(!istrm.is_open())
     	{
-			LogPrinter::inst()->export_log("open readfile failed", "log/log.txt");
+			LogPrinter::export_log("open readfile failed", "log/log.txt");
         	return;
     	}
 		while(!istrm.eof()) {
@@ -84,12 +84,12 @@ void DictProducer::build_cn_dict(){
 }
 
 void DictProducer::store_dict(const char * filepath){
-	LogPrinter::inst()->export_log("store dict", "log/log.txt");
+	LogPrinter::export_log("store dict", "log/log.txt");
 	std::fstream s(filepath, s.binary | s.trunc | s.out);
 	if (!s.is_open()) {
 		std::string info = "failed to open ";
 		info += filepath;
-		LogPrinter::inst()->export_log(info, "log/log.txt");
+		LogPrinter::export_log(info, "log/log.txt");
 	}else {
 		for(auto i : _dict) {
 			std::cout << i.first << std::endl;
