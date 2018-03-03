@@ -41,9 +41,13 @@ private:
 
 class SocketIO{
 public:
-	
+	SocketIO(int sockfd);
+	size_t readline(char * buf, size_t max);
+	size_t readn(char * buf, size_t count);
+	size_t writen(char * buf, size_t count);
 private:
-
+	size_t recvPeek(char * buf, size_t count);
+	int  _connection_fd;
 };
 
 #endif

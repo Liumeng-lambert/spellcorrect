@@ -54,7 +54,7 @@ int Socket::create_socket_fd() {
 	int fd = ::socket(AF_INET, SOCK_STREAM, 0);
 	if(fd == -1) {
 		LogPrinter::export_log(
-							"fail to create socket fd", "log/socketLog.txt");
+				"fail to create socket fd", "log/socketLog.txt");
 	}
 	return fd;
 }
@@ -67,23 +67,30 @@ void Socket::ready(const InetAddress &addr) {
 }
 
 int Socket::accept() {
-	
+	/*can get remote machine info*/
+	int connection_fd = ::accept(_sockfd, NULL, NULL);
+	if (connection_fd == -1) {
+		LogPrinter::export_log("error to accept", "socketLog.txt");
+		close(_sockfd);
+		exit(EXIT_FAILURE);
+	}
+	return connection_fd;
 }
 
 int Socket::fd() {
 	return _sockfd;
 }
-
+/*TODO:*/
 InetAddress Socket::get_local_addr(int sockfd) {
 
 }
-
+/*TODO:*/
 InetAddress Socket::get_peer_addr(int sockfd) {
 
 }
 
 void Socket::shutdown_write() {
-
+	shutdown(_sockfd, SHUT_WR);
 }
 
 void Socket::bind_address(const InetAddress & addr) {
@@ -97,14 +104,71 @@ void Socket::bind_address(const InetAddress & addr) {
 }
 
 void Socket::listen() {
-	
+	/*max connection can handle*/
+	int max_connection = 10;	
+	if(::listen(_sockfd, max_connection) == -1) {
+		LogPrinter::export_log("error to listen", "log/socketLog.txt");
+		close(_sockfd);
+		exit(EXIT_FAILURE);
+	}
 }
-
+/*TODO:*/
 void Socket::set_reuse_addr(bool flag) {
 
 }
-
+/*TODO:*/
 void Socket::set_reuse_port(bool flag) {
+
+}
+
+SocketIO::SocketIO(int connection_fd) 
+:_connection_fd(connection_fd)
+{
+}
+
+size_t SocketIO::readline(char * buf, size_t max) {
+	
+}
+
+size_t SocketIO::readn(char * buf, size_t count) {
+	size_t left = count;
+	char * p_tmp = buf;
+	while(left > 0) {
+		int ret = recv(_connection_fd, p_tmp, left, 0);
+		if(-1 == ret) {
+			if(errno == EINTR) {
+				continue;
+			}
+			exit(EXIT_FAILURE);
+		}else if(0 == ret){	
+			break;	
+		}
+		p_tmp += ret;
+		left -= ret;
+	}
+	return count - left;
+}
+
+size_t SocketIO::writen(char * buf, size_t count) {
+	size_t left = count;
+	char * p_tmp = buf;
+	while(left > 0) {
+		int ret = send(_connection_fd, p_tmp, left, 0);
+		if(ret == -1) {
+			if(errno == EINTR) {
+				continue;
+			}
+			exit(EXIT_FAILURE);
+		}else if(ret == 0) {
+			break;
+		}
+		left -= ret;
+		p_tmp += ret;
+	}
+	return count - left;
+}
+/*recv: copy not cut*/
+size_t SocketIO::recvPeek(char * buf, size_t count) {
 
 }
 
