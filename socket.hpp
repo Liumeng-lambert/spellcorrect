@@ -23,6 +23,7 @@ private:
 class Socket{
 public:
 	Socket();
+	Socket(int fd);
 	/*get ready to listen*/
 	void ready(const InetAddress &addr);
 	int accept();

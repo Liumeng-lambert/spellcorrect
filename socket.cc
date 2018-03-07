@@ -50,6 +50,11 @@ Socket::Socket()
 {
 }
 
+Socket::Socket(int fd)
+: _sockfd(fd)
+{
+}
+
 int Socket::create_socket_fd() {
 	int fd = ::socket(AF_INET, SOCK_STREAM, 0);
 	if(fd == -1) {
@@ -112,13 +117,26 @@ void Socket::listen() {
 		exit(EXIT_FAILURE);
 	}
 }
-/*TODO:*/
+
+/*the function should call before bind_address()*/
 void Socket::set_reuse_addr(bool flag) {
-
+	int reuse = flag? 1: 0;
+	int ret = ::setsockopt(_sockfd,SOL_SOCKET ,SO_REUSEADDR,(const char*)&reuse,sizeof(int));
+	if (ret == -1) {
+		LogPrinter::export_log("error to set addr resuse",
+								"log/socketLog.txt");
+	}
 }
-/*TODO:*/
-void Socket::set_reuse_port(bool flag) {
 
+/*the function should call before bind_address()*/
+void Socket::set_reuse_port(bool flag) {
+	int reuse = flag? 1: 0;
+	int ret = ::setsockopt(_sockfd,SOL_SOCKET ,SO_REUSEPORT,(const char*)&reuse,sizeof(int));
+	if (ret == -1) {
+		LogPrinter::export_log("error to set port resuse",
+								"log/socketLog.txt");
+	}
+	
 }
 
 SocketIO::SocketIO(int connection_fd) 
