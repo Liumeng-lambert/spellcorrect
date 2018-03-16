@@ -30,9 +30,9 @@ public:
 	int fd();
 	static InetAddress get_local_addr(int sockfd);
 	static InetAddress get_peer_addr(int sockfd);
+	void shutdown_write();
 private:
 	int create_socket_fd();
-	void shutdown_write();
 	void bind_address(const InetAddress & addr);
 	void listen();
 	void set_reuse_addr(bool flag);
@@ -45,7 +45,7 @@ public:
 	SocketIO(int sockfd);
 	size_t readline(char * buf, size_t max);
 	size_t readn(char * buf, size_t count);
-	size_t writen(char * buf, size_t count);
+	size_t writen(const char * buf, size_t count);
 private:
 	size_t recvPeek(char * buf, size_t count);
 	int  _connection_fd;

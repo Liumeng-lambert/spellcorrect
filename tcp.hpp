@@ -10,11 +10,15 @@
 #include <memory>
 #include <functional>
 #include "socket.hpp"
-class TcpConnection{
+
+class TcpConnection;
+typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
+
+class TcpConnection: public std::enable_shared_from_this<TcpConnection>{
 public:
 	TcpConnection();
+	TcpConnection(int sockfd);
 	~TcpConnection();
-	typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 	typedef std::function<void (const TcpConnectionPtr &)> TcpConnectionCallback;
 	std::string receive();
 	void send(const std::string & msg);
@@ -29,12 +33,12 @@ public:
 private:
 	Socket _socket;
 	SocketIO _sockIO;
-	const InetAddress _localAddr;
-	const InetAddress _peerAddr;
-	bool _isShutdownWrite;
+	const InetAddress _local_addr;
+	const InetAddress _peer_addr;
+	bool _is_shutdown_write;
 	TcpConnectionCallback _on_connection_cb;
-	TcpConnectionCallback _onMessage_cb;
-	TcpConnectionCallback _onClose_cb;
+	TcpConnectionCallback _on_message_cb;
+	TcpConnectionCallback _on_close_cb;
 
 };
 #endif

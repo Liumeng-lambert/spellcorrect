@@ -75,7 +75,7 @@ int Socket::accept() {
 	/*can get remote machine info*/
 	int connection_fd = ::accept(_sockfd, NULL, NULL);
 	if (connection_fd == -1) {
-		LogPrinter::export_log("error to accept", "socketLog.txt");
+		LogPrinter::export_log("error to accept", "log/socketLog.txt");
 		close(_sockfd);
 		exit(EXIT_FAILURE);
 	}
@@ -145,7 +145,37 @@ SocketIO::SocketIO(int connection_fd)
 }
 
 size_t SocketIO::readline(char * buf, size_t max) {
-	
+	size_t left = max - 1;
+	size_t total = 0;
+	char *p_tmp = buf;
+	int nread;
+	while(left > 0) {
+		nread = recvPeek(p_tmp, left);
+		if(nread <= 0) {
+			return nread;
+		}
+		for(int i = 0; i < nread; ++i) {
+			/*find /n*/
+			if(p_tmp[i] == '\n') {
+				size_t nsize = i + 1;
+				if(readn(p_tmp, nsize) != nsize) {
+					return -1;
+				}
+				p_tmp += nsize;
+				total += nsize;
+				*p_tmp = '\0';
+				return total;		
+			}
+		}
+		if(readn(p_tmp, nread) != nread) {
+			return -1;
+		}
+		p_tmp += nread;
+		total += nread;
+		left -= nread;
+	}	
+	*p_tmp = '\0';
+	return max - 1;
 }
 
 size_t SocketIO::readn(char * buf, size_t count) {
@@ -153,6 +183,7 @@ size_t SocketIO::readn(char * buf, size_t count) {
 	char * p_tmp = buf;
 	while(left > 0) {
 		int ret = recv(_connection_fd, p_tmp, left, 0);
+		/*signal interrupt and no data read*/
 		if(-1 == ret) {
 			if(errno == EINTR) {
 				continue;
@@ -167,9 +198,9 @@ size_t SocketIO::readn(char * buf, size_t count) {
 	return count - left;
 }
 
-size_t SocketIO::writen(char * buf, size_t count) {
+size_t SocketIO::writen(const char * buf, size_t count) {
 	size_t left = count;
-	char * p_tmp = buf;
+	const char * p_tmp = buf;
 	while(left > 0) {
 		int ret = send(_connection_fd, p_tmp, left, 0);
 		if(ret == -1) {
@@ -185,9 +216,14 @@ size_t SocketIO::writen(char * buf, size_t count) {
 	}
 	return count - left;
 }
-/*recv: copy not cut*/
-size_t SocketIO::recvPeek(char * buf, size_t count) {
-
+/*recv: copy from buffer ,not cut, not delete from buffer*/
+size_t SocketIO::recvPeek(char * buf, size_t len) {
+	size_t read_msg;
+	do
+	{
+		read_msg = recv(_connection_fd, buf, len, MSG_PEEK);
+	}while(-1 == read_msg && errno == EINTR);
+	return read_msg;
 }
 
 
