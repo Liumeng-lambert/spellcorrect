@@ -14,14 +14,27 @@
 #include <unistd.h>
 #include <condition_variable>
 #include "task.hpp"
+#include "cache.hpp"
+namespace spellCorrect{
+class ThreadPool;
+
+class MyThread:public std::thread{
+public:
+	MyThread(ThreadPool & thread_pool);
+private:
+	Cache _cache;
+	ThreadPool & _thread_pool;
+};
+
 class ThreadPool{
 public:
-	ThreadPool(int thread_num);
+	ThreadPool(int thread_num = 10);
 	~ThreadPool();
 	void start();
 	void stop();
-	void threadFunc();	
+	void thread_func();	
 	void add_task(Task* task);
+	Cache& get_cache();
 private:
 	/*capacity of _vec_thread*/
 	int _thread_capacity;
@@ -31,8 +44,10 @@ private:
 	std::mutex _mutex_lock;
 	bool _is_running;
 	Task* get_task();
+	Cache _cache;
 
 	std::queue <Task*> _task_que;
-	std::vector <std::thread> _vec_thread;
+	std::vector <MyThread*> _vec_thread;
 };
+}
 #endif

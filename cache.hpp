@@ -8,7 +8,6 @@
 #define _SPELL_CORRECT_CACHE_H_
 #include <iostream>
 #include <unordered_map>
-namespace searchEngine{
 namespace spellCorrect{
 class Cache{
 public:
@@ -24,6 +23,5 @@ private:
 };
 
 }
-}
-#endif
 
+#endif

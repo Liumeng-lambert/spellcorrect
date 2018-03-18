@@ -10,7 +10,6 @@
 #include <string>
 #include <map>
 
-namespace searchEngine{
 namespace spellCorrect{
 
 class Configuration{
@@ -22,6 +21,5 @@ private:
 	std::map<std::string, std::string> _config_map;
 };
 
-}
 }
 #endif

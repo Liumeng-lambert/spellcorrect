@@ -6,7 +6,6 @@
  
 #include <iostream>
 #include "cache.hpp"
-namespace searchEngine{
 namespace spellCorrect{
 Cache::Cache(int cache_size){
 	_hash_map.reserve(cache_size);
@@ -36,4 +35,4 @@ void Cache::update(const Cache & rhs){
 }
 
 }
-}
+

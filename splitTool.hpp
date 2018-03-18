@@ -7,7 +7,6 @@
 #define _SPELL_CORRECT_SPLIT_TOOL_H_
 #include <iostream>
 #include "configuration.hpp"
-namespace searchEngine{
 namespace spellCorrect{
 
 class SplitTool{
@@ -27,7 +26,5 @@ private:
 };
 
 }
-}
 
 #endif
-

@@ -8,7 +8,7 @@
 #include "configuration.hpp"
 #include "dictionary.hpp"
 #include "splitTool.hpp"
-using searchEngine::spellCorrect::DictProducer;
+using spellCorrect::DictProducer;
 int main(){
 	DictProducer* dict_producer = new DictProducer("data");	
 	return 0;

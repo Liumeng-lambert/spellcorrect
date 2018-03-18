@@ -7,7 +7,6 @@
 #include <sstream>
 #include <fstream>
 #include "configuration.hpp"
-namespace searchEngine{
 namespace spellCorrect{
 Configuration::Configuration(const std::string& filepath)
 :_filepath(filepath)
@@ -35,5 +34,4 @@ std::map<std::string, std::string> & Configuration::get_config_map(){
 	return _config_map;
 }
 
-}
 }

@@ -11,7 +11,6 @@
 #include <dirent.h>
 #include "dictionary.hpp"
 #include "log.hpp"
-namespace searchEngine{
 namespace spellCorrect{
 DictProducer::DictProducer(const std::string& dir)
 :_dir(dir)
@@ -123,5 +122,4 @@ void DictProducer::push_dict(const std::string & word){
 	}	
 }
 
-}
 }

@@ -6,8 +6,6 @@
  
 #include <iostream>
 #include "splitTool.hpp"
-namespace searchEngine{
 namespace spellCorrect{
 
-}
 }

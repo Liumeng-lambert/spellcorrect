@@ -19,13 +19,13 @@ public:
 	void start();
 	void stop();
 	typedef TcpConnection::TcpConnectionCallback TcpServerCallback;
-	void setConnectionCallback(TcpServerCallback cb);
-	void setMessageCallback(TcpServerCallback cb);
-	void setCloseCallback(TcpServerCallback cb);
+	void set_connection_callback(TcpServerCallback cb);
+	void set_message_callback(TcpServerCallback cb);
+	void set_close_callback(TcpServerCallback cb);
 private:
 	InetAddress _inet_addr;
 	Socket _sockfd;
-	EpollPoller _epollfd;
+	EpollPoller _epoller;
 	TcpServerCallback _on_connection_cb;
 	TcpServerCallback _on_message_cb;
 	TcpServerCallback _on_close_cb;

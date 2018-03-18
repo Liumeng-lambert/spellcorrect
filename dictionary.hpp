@@ -12,7 +12,6 @@
 #include "splitTool.hpp"
 #include "log.hpp"
 
-namespace searchEngine{
 namespace spellCorrect{
 
 class DictProducer{
@@ -40,6 +39,5 @@ private:
 	LogPrinter*  _log_printer;
 };
 
-}
 }
 #endif
