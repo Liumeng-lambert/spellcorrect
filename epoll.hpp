@@ -29,6 +29,7 @@ private:
 	int _listenfd; 
 	bool _is_looping;
 	std::vector<struct epoll_event> _event_list;
+	//save all connection
 	std::map<int, TcpConnectionPtr> _conn_map;
 	EpollCallback _on_connection_cb;
 	EpollCallback _on_message_cb;

@@ -20,10 +20,10 @@ private:
 	sockaddr_in  _addr;
 };
 
-class Socket{
+class SocketServer{
 public:
-	Socket();
-	Socket(int fd);
+	SocketServer();
+	SocketServer(int fd);
 	/*get ready to listen*/
 	void ready(const InetAddress &addr);
 	int accept();
@@ -37,6 +37,18 @@ private:
 	void listen();
 	void set_reuse_addr(bool flag);
 	void set_reuse_port(bool flag);
+	int _sockfd;
+};
+
+class SocketClient{
+public:
+	SocketClient();
+	SocketClient(int fd);
+	~SocketClient();
+	void connect(const InetAddress & addr);
+	int fd();
+private:
+	int create_socket_fd();
 	int _sockfd;
 };
 

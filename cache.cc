@@ -5,27 +5,40 @@
  ///
  
 #include <iostream>
+#include <fstream>
 #include "cache.hpp"
 namespace spellCorrect{
 Cache::Cache(int cache_size){
 	_hash_map.reserve(cache_size);
 	//build from file
+	std::string file_name = "cache/cache.dat";
+	read_from_file(file_name);
 }
 
 Cache::Cache(const Cache & cache){
 	_hash_map = cache._hash_map;
 }
 
-void Cache::addElement(const std::string &key, int value){
-	std::pair<std::string, int>tmp(key, value);
+void Cache::add_element(const std::string &key, std::string value){
+	std::pair<std::string, std::string>tmp(key, value);
 	_hash_map.insert(tmp);
 }
 
-void Cache::readFromFile(const std::string & filename){
+void Cache::read_from_file(const std::string & filename){
+	std::ifstream ifstrm(filename, std::ios::binary);
+	if(!ifstrm){
+		std::cout << "cache file: " << filename << std::endl ; 
+		throw std::runtime_error("open cache file fail !");
+	}
+	std::string query, result;
+	while(ifstrm >> query >> result) {
+		_hash_map.insert(std::pair<std::string, std::string >(query, result));
+	}
+	ifstrm.close();
 
 }
 
-void Cache::writeToFile(const std::string & filename){
+void Cache::write_to_file(const std::string & filename){
 
 }
 

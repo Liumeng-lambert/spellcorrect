@@ -30,8 +30,9 @@ public:
 	void handle_message_callback();
 	void handle_close_callback();
 	std::string to_string();
+	SocketServer& get_socket();
 private:
-	Socket _socket;
+	SocketServer _socket;
 	SocketIO _sockIO;
 	const InetAddress _local_addr;
 	const InetAddress _peer_addr;

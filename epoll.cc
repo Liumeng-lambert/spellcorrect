@@ -135,8 +135,10 @@ void EpollPoller::handle_message(int peerfd) {
 	if(iter != _conn_map.end()) {
 		bool stat = in_connection(peerfd);
 		if(stat) {
+			//get new message
 			iter->second->handle_message_callback();	
 		} else {
+			//should close the connection
 			del_epollfd(_epollfd, peerfd);
 			iter->second->handle_close_callback();
 			_conn_map.erase(iter);

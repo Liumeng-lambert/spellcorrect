@@ -24,7 +24,7 @@ public:
 	void set_close_callback(TcpServerCallback cb);
 private:
 	InetAddress _inet_addr;
-	Socket _sockfd;
+	SocketServer _sockfd;
 	EpollPoller _epoller;
 	TcpServerCallback _on_connection_cb;
 	TcpServerCallback _on_message_cb;

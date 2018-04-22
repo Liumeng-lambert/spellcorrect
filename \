@@ -16,7 +16,7 @@
 #include <condition_variable>
 #include "task.hpp"
 #include "cache.hpp"
-
+#include "spellcorrect.hpp"
 namespace spellCorrect{
 class ThreadPool;
 
@@ -32,31 +32,18 @@ private:
 	std::thread _thread;
 };
 
-struct MyResult{
-	std::string _word;
-	//appear frequency
-	int _freq;
-	//distance between this word and the input word
-	int _dist;
-	bool operator < (const MyResult & rhs) const{
-		if(_dist == rhs._dist){
-			return _freq < rhs._freq;
-		}
-		return _dist < rhs._dist;
-	}
-};
+struct MyResult; // in spellcorrect.hpp
 
 class MyTask:public Task{
 public:
     MyTask(const std::string& query_word, int peerfd);
     virtual void process(Cache & cache);
-	virtual void process();
 private:
     std::string _query_word;
     int _peerfd;
-    std::priority_queue<MyResult, 
-		          std::vector<MyResult> > _result_que;
-	void query_index_table();
+    std::priority_queue<MyResult, std::vector<MyResult>
+                   MyCompare> _result_que;
+    void query_index_table();
     void statistic(std::set<int> & iset);
     int distance(const std::string & rhs);
     void response(Cache & cache);                      

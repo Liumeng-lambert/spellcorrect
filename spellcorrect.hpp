@@ -13,13 +13,6 @@
 #include "threadPool.hpp"
 
 namespace spellCorrect{
-struct MyResult{
-	std::string _word;
-	//appear frequency
-	int _freq;
-	//distance between this word and the input word
-	int _dist;
-};
 
 class TimeThread {
 public:
@@ -46,6 +39,7 @@ private:
 	ThreadPool _threadpool;
 	TimeThread _timer;
 };
+
 
 }
 #endif

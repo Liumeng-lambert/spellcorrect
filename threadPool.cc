@@ -5,13 +5,54 @@
  ///
  
 #include <iostream>
+#include <functional>
 #include "threadPool.hpp"
 namespace spellCorrect{
 MyThread::MyThread(ThreadPool & thread_pool) 
 :_thread_pool(thread_pool),
- thread(&ThreadPool::thread_func, &thread_pool),
- _cache(_thread_pool.get_cache())
+ _cache(), 
+ _thread(&ThreadPool::thread_func, &_thread_pool, std::ref(_cache))
 {
+
+}
+
+MyThread::~MyThread(){
+	join();
+}
+
+void MyThread::join(){
+	_thread.join();
+}
+
+Cache& MyThread::get_cache() {
+	return _cache;
+}
+
+MyTask::MyTask(const std::string& query_word, int peerfd)
+:_query_word(query_word), _peerfd(peerfd)
+{       
+}
+void MyTask::process(){
+
+}
+
+void MyTask::process(Cache & cache) {
+
+}
+
+void MyTask::query_index_table() {
+
+}
+
+void MyTask::statistic(std::set<int> & iset) {
+
+}
+
+int MyTask::distance(const std::string & rhs) {
+
+}
+
+void MyTask::response(Cache & cache) {
 
 }
 
@@ -23,7 +64,7 @@ ThreadPool::ThreadPool(int thread_num)
 }
 
 ThreadPool::~ThreadPool(){
-	if(_is_running) {
+	if(is_running()) {
 		stop();
 	}
 }
@@ -37,7 +78,7 @@ void ThreadPool::start(){
 }
 
 void ThreadPool::stop(){
-	if(_is_running) {
+	if(is_running()) {
 		/*wait for empty*/
 		while(!_task_que.empty()) {
 			sleep(1);
@@ -52,11 +93,11 @@ void ThreadPool::stop(){
 	}
 }
 
-void ThreadPool::thread_func(){
-	while(_is_running) {
+void ThreadPool::thread_func(Cache  &cache){
+	while(is_running()) {
 		Task *task = get_task();
 		if(task){
-			task->process();
+			task->process(cache);
 		}
 	}
 }
@@ -89,8 +130,7 @@ Task* ThreadPool::get_task(){
 	return tmp;
 }
 
-Cache& ThreadPool::get_cache() {
-	return _cache;
+bool ThreadPool::is_running() {
+	return _is_running;
 }
-
 }

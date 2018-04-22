@@ -45,17 +45,17 @@ const struct sockaddr_in* InetAddress::get_addr_ptr()const {
 	return &_addr;
 }
 
-Socket::Socket()
+SocketServer::SocketServer()
 :_sockfd(create_socket_fd())
 {
 }
 
-Socket::Socket(int fd)
+SocketServer::SocketServer(int fd)
 : _sockfd(fd)
 {
 }
 
-int Socket::create_socket_fd() {
+int SocketServer::create_socket_fd() {
 	int fd = ::socket(AF_INET, SOCK_STREAM, 0);
 	if(fd == -1) {
 		LogPrinter::export_log(
@@ -64,14 +64,14 @@ int Socket::create_socket_fd() {
 	return fd;
 }
 
-void Socket::ready(const InetAddress &addr) {
+void SocketServer::ready(const InetAddress &addr) {
 	set_reuse_addr(true);
 	set_reuse_port(true);
 	bind_address(addr);
 	listen();
 }
 
-int Socket::accept() {
+int SocketServer::accept() {
 	/*can get remote machine info*/
 	int connection_fd = ::accept(_sockfd, NULL, NULL);
 	if (connection_fd == -1) {
@@ -82,23 +82,23 @@ int Socket::accept() {
 	return connection_fd;
 }
 
-int Socket::fd() {
+int SocketServer::fd() {
 	return _sockfd;
 }
 /*TODO:*/
-InetAddress Socket::get_local_addr(int sockfd) {
+InetAddress SocketServer::get_local_addr(int sockfd) {
 
 }
 /*TODO:*/
-InetAddress Socket::get_peer_addr(int sockfd) {
+InetAddress SocketServer::get_peer_addr(int sockfd) {
 
 }
 
-void Socket::shutdown_write() {
+void SocketServer::shutdown_write() {
 	shutdown(_sockfd, SHUT_WR);
 }
 
-void Socket::bind_address(const InetAddress & addr) {
+void SocketServer::bind_address(const InetAddress & addr) {
 	int ret = bind(_sockfd, (sockaddr*)addr.get_addr_ptr(), 
 				   sizeof(sockaddr));
 	if(ret == -1){
@@ -108,7 +108,7 @@ void Socket::bind_address(const InetAddress & addr) {
 	}
 }
 
-void Socket::listen() {
+void SocketServer::listen() {
 	/*max connection can handle*/
 	int max_connection = 10;	
 	if(::listen(_sockfd, max_connection) == -1) {
@@ -119,7 +119,7 @@ void Socket::listen() {
 }
 
 /*the function should call before bind_address()*/
-void Socket::set_reuse_addr(bool flag) {
+void SocketServer::set_reuse_addr(bool flag) {
 	int reuse = flag? 1: 0;
 	int ret = ::setsockopt(_sockfd,SOL_SOCKET ,SO_REUSEADDR,(const char*)&reuse,sizeof(int));
 	if (ret == -1) {
@@ -129,7 +129,7 @@ void Socket::set_reuse_addr(bool flag) {
 }
 
 /*the function should call before bind_address()*/
-void Socket::set_reuse_port(bool flag) {
+void SocketServer::set_reuse_port(bool flag) {
 	int reuse = flag? 1: 0;
 	int ret = ::setsockopt(_sockfd,SOL_SOCKET ,SO_REUSEPORT,(const char*)&reuse,sizeof(int));
 	if (ret == -1) {
@@ -137,6 +137,43 @@ void Socket::set_reuse_port(bool flag) {
 								"log/socketLog.txt");
 	}
 	
+}
+
+SocketClient::SocketClient()
+:_sockfd(create_socket_fd())
+{
+
+}
+
+SocketClient::SocketClient(int fd)
+:_sockfd(fd)
+{
+
+}
+
+SocketClient::~SocketClient() {
+
+}
+
+void SocketClient::connect(const InetAddress & addr) {
+	int ret = ::connect(_sockfd, (sockaddr*)&addr, sizeof(addr));
+	if(ret == -1) {
+		LogPrinter::export_log(
+				"fail to connect", "log/socketLog.txt");	
+	}
+}
+
+int SocketClient::fd() {
+	return _sockfd;
+}
+
+int SocketClient::create_socket_fd() {
+	int fd = ::socket(AF_INET, SOCK_STREAM, 0);
+	if(fd == -1) {
+		LogPrinter::export_log(
+				"fail to create socket fd", "log/socketLog.txt");
+	}
+	return fd;
 }
 
 SocketIO::SocketIO(int connection_fd) 

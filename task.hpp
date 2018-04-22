@@ -7,14 +7,14 @@
 #ifndef _TASK_H_
 #define _TASK_H_
 #include <iostream>
-
+#include "cache.hpp"
+namespace spellCorrect{
 class Task{
 public:
-	Task();
-	~Task();
+	Task(){}
+	~Task(){}
 	virtual void process()=0;
-private:
-
+	virtual void process(Cache & cache)=0;
 };
+}
 #endif
-

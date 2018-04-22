@@ -12,8 +12,8 @@
 
 TcpConnection::TcpConnection()
 :_socket(), _sockIO(_socket.fd()),
- _local_addr(Socket::get_local_addr(_socket.fd())),
- _peer_addr(Socket::get_local_addr(_socket.fd())),
+ _local_addr(SocketServer::get_local_addr(_socket.fd())),
+ _peer_addr(SocketServer::get_local_addr(_socket.fd())),
  _is_shutdown_write(false)
 {
 	/*
@@ -24,8 +24,8 @@ TcpConnection::TcpConnection()
 
 TcpConnection::TcpConnection(int sockfd)
 :_socket(sockfd), _sockIO(sockfd),
-_local_addr(Socket::get_local_addr(sockfd)),
-_peer_addr(Socket::get_local_addr(sockfd)),
+_local_addr(SocketServer::get_local_addr(sockfd)),
+_peer_addr(SocketServer::get_local_addr(sockfd)),
 _is_shutdown_write(false)
 {
 	/*set callback function*/
@@ -99,6 +99,10 @@ std::string TcpConnection::to_string() {
 		   << " ----> " << _peer_addr.get_ip() 
 		   << ":"<< _peer_addr.get_port();
 	return osstrm.str();
+}
+
+SocketServer& TcpConnection::get_socket() {
+	return _socket;
 }
 
 

@@ -13,12 +13,12 @@ class Cache{
 public:
 	Cache(int cache_size = 10);
 	Cache(const Cache & cache);
-	void addElement(const std::string &key, int value);
-	void readFromFile(const std::string & filename);
-	void writeToFile(const std::string & filename);
+	void add_element(const std::string &key, const std::string value);
+	void read_from_file(const std::string & filename);
+	void write_to_file(const std::string & filename);
 	void update(const Cache & rhs);
 private:
-	std::unordered_map<std::string, int> _hash_map;
+	std::unordered_map<std::string, std::string> _hash_map;
 
 };
 
