@@ -11,7 +11,7 @@ EpollPoller::EpollPoller(int listenfd)
 :_epollfd(create_epollfd()), _listenfd(listenfd),
 _is_looping(false), _event_list(1024)
 {
-	add_epollfd(_epollfd, listenfd);
+	add_epollfd(_epollfd, _listenfd);
 }
 
 void EpollPoller::loop() {
@@ -32,9 +32,9 @@ bool EpollPoller::in_connection(int connfd) {
 	char buf[1024];
 	int ready;
 	do{
-		recv(connfd, buf, 1024, MSG_PEEK);
+		ready = recv(connfd, buf, 1024, MSG_PEEK);
 	} while(-1 == ready && errno == EINTR);
-	return ready == 0;
+	return ready != 0;
 }
 /*
 //this function can call by other thread
@@ -77,6 +77,7 @@ void EpollPoller::add_epollfd(int efd, int fd) {
 		perror("add_epollfd error");
 		exit(EXIT_FAILURE);
 	}
+	_event_list.push_back(ev);
 }
 
 void EpollPoller::del_epollfd(int efd, int fd) {
@@ -102,8 +103,8 @@ int EpollPoller::accept_connection(int listenfd) {
 }
 
 void EpollPoller::wait_epollfd() {
-    int nfds = epoll_wait(_epollfd, &*_event_list.begin(), _event_list.size(), 500);
-    for(int i = 0; i < nfds; ++i){
+	int nfds = epoll_wait(_epollfd, &(*_event_list.begin()), _event_list.size(), -1);
+	for(int i = 0; i < nfds; ++i){
 		/*receive new connection request*/
         if(_event_list[i].data.fd == _listenfd) { 
 			handle_connection();
@@ -121,11 +122,13 @@ void EpollPoller::wait_epollfd() {
 void EpollPoller::handle_connection() {
 	int conn_fd = accept_connection(_listenfd);	
 	add_epollfd(_epollfd, conn_fd);
-
 	TcpConnectionPtr p_tcp_conn(new TcpConnection(conn_fd));
+		
 	p_tcp_conn-> set_connection_callback(_on_connection_cb);
+	
 	p_tcp_conn-> set_message_callback(_on_message_cb);
 	p_tcp_conn-> set_close_callback(_on_close_cb);
+	//_on_connection_cb(p_tcp_conn);
 	_conn_map.insert(std::make_pair(conn_fd, p_tcp_conn));
 	p_tcp_conn->handle_connection_callback();
 }

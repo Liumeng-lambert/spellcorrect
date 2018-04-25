@@ -9,6 +9,34 @@
 #include "spellcorrect.hpp"
 namespace spellCorrect{
 
+WordQuery::WordQuery(Index &index)
+{       
+}
+
+WordQuery::~WordQuery() {
+
+}
+
+void WordQuery::execute(std::string query_word, Cache& cache) {
+	std::cout << "success!" << std::endl;	
+}
+
+void WordQuery::query_index_table(std::string query_word) {
+
+}
+/*caculate from reverse index*/
+void WordQuery::statistic(std::set<int> & iset) {
+
+}
+
+int WordQuery::distance(const std::string & rhs) {
+
+}
+
+void WordQuery::response(Cache & cache) {
+
+}
+
 TimeThread::TimeThread() 
 :_is_running(false),
  _timer(std::bind(&TimeThread::thread_func, this))
@@ -36,10 +64,11 @@ void TimeThread::thread_func() {
 	}
 }
 
-SpellCorrectServer::SpellCorrectServer(const std::string & config_file)
-:_conf(std::string("conf/config")), 
- _tcp_server(2000),
+SpellCorrectServer::SpellCorrectServer(const std::string & config_file, Index& index)
+:_conf(std::string("config/config")), 
+ _tcp_server(9009),
  _threadpool(),
+ _query(index),
  _timer()
 {
 	_tcp_server.set_connection_callback(std::bind(&SpellCorrectServer::on_connection, this, std::placeholders::_1 ));
@@ -48,7 +77,13 @@ SpellCorrectServer::SpellCorrectServer(const std::string & config_file)
 }
 
 void SpellCorrectServer::start() {
-	
+	/*
+	_tcp_server.set_connection_callback(on_connection);
+	_tcp_server.set_message_callback(on_message);
+	_tcp_server.set_close_callback(on_close);
+	*/
+	_threadpool.start();
+	_tcp_server.start();
 }
 
 void SpellCorrectServer::on_connection(TcpConnectionPtr conn) {
@@ -57,12 +92,13 @@ void SpellCorrectServer::on_connection(TcpConnectionPtr conn) {
 
 void SpellCorrectServer::on_message(TcpConnectionPtr conn) {
 	std::string query_word = conn->receive();
-	Task* my_task = new MyTask(query_word, conn->get_socket().fd());
-	_threadpool.add_task(my_task);
+	std::cout << "Start to search : " << query_word << std::endl;
+	_threadpool.add_task(std::bind(&WordQuery::execute, &_query, query_word, std::placeholders::_1));
 }
 
 void SpellCorrectServer::on_close(TcpConnectionPtr conn) {
 	std::cout << "Ready to close " << conn->to_string() << std::endl;
 }
+
 
 }

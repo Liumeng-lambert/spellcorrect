@@ -14,7 +14,8 @@
 #include <unistd.h>
 #include <set>
 #include <condition_variable>
-#include "task.hpp"
+#include <functional>
+//#include "task.hpp"
 #include "cache.hpp"
 
 namespace spellCorrect{
@@ -27,49 +28,19 @@ public:
 	void join();
 	Cache& get_cache();
 private:
-	Cache _cache;
-	ThreadPool & _thread_pool;
+	Cache _cache;	
 	std::thread _thread;
 };
 
-struct MyResult{
-	std::string _word;
-	//appear frequency
-	int _freq;
-	//distance between this word and the input word
-	int _dist;
-	bool operator < (const MyResult & rhs) const{
-		if(_dist == rhs._dist){
-			return _freq < rhs._freq;
-		}
-		return _dist < rhs._dist;
-	}
-};
-
-class MyTask:public Task{
-public:
-    MyTask(const std::string& query_word, int peerfd);
-    virtual void process(Cache & cache);
-	virtual void process();
-private:
-    std::string _query_word;
-    int _peerfd;
-    std::priority_queue<MyResult, 
-		          std::vector<MyResult> > _result_que;
-	void query_index_table();
-    void statistic(std::set<int> & iset);
-    int distance(const std::string & rhs);
-    void response(Cache & cache);                      
-};
-
 class ThreadPool{
+	typedef std::function <void(Cache&)> Task;
 public:
 	ThreadPool(int thread_num = 10);
 	~ThreadPool();
 	void start();
 	void stop();
-	void add_task(Task* task);
-	void thread_func(Cache & cache);
+	void add_task(Task task);
+	void thread_func(Cache& cache);
 	bool is_running();
 private:
 	/*capacity of _vec_thread*/
@@ -79,10 +50,11 @@ private:
 	std::condition_variable _not_full;
 	std::mutex _mutex_lock;
 	bool _is_running;
-	Task* get_task();
 
-	std::queue <Task*> _task_que;
+	std::queue <Task> _task_que;
 	std::vector <MyThread*> _vec_thread;
+	
+	Task get_task();
 };
 }
 #endif

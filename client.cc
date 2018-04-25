@@ -21,6 +21,9 @@ Client::~Client() {
 }
 
 void Client::start() {
+	std::cout << "client start" << std::endl;
+	_sockfd.connect_socket(_inet_addr);
+	
 	while(1){
 		run_service();
 	}
@@ -28,18 +31,18 @@ void Client::start() {
 
 void Client::run_service() {
 	char buf[512];
-	int ret = read(0, buf, sizeof(buf));
+	int ret = read(0, buf, 512);
 	if(-1 == ret){
         std::cout << "read error" << std::endl; 
 	}
-	ret = _socket_io.writen(buf, sizeof(buf));
+	ret = _socket_io.writen(buf, 512);
 	if(-1 == ret){
         std::cout << "write error" << std::endl; 
 	}
-	while(1){
+	//while(1){
 		char tmp[512];
 		_socket_io.readline(tmp, 512);
 		std::cout << tmp << std::endl;
-	}
+	//}
 }
 

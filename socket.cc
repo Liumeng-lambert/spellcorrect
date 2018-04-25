@@ -23,6 +23,7 @@ InetAddress::InetAddress(const std::string ip, unsigned short port) {
 	memset(&_addr, 0, sizeof(struct sockaddr_in));
 	_addr.sin_family = AF_INET;
 	_addr.sin_port = htons(port);
+	std::cout << ip.c_str() << std::endl;
 	_addr.sin_addr.s_addr = inet_addr(ip.c_str());
 
 }
@@ -65,6 +66,9 @@ int SocketServer::create_socket_fd() {
 }
 
 void SocketServer::ready(const InetAddress &addr) {
+	LogPrinter::export_log("socket ready",
+			  "log/socketLog.txt");
+	
 	set_reuse_addr(true);
 	set_reuse_port(true);
 	bind_address(addr);
@@ -73,6 +77,7 @@ void SocketServer::ready(const InetAddress &addr) {
 
 int SocketServer::accept() {
 	/*can get remote machine info*/
+	std::cout << "accept" << std::endl;
 	int connection_fd = ::accept(_sockfd, NULL, NULL);
 	if (connection_fd == -1) {
 		LogPrinter::export_log("error to accept", "log/socketLog.txt");
@@ -99,7 +104,7 @@ void SocketServer::shutdown_write() {
 }
 
 void SocketServer::bind_address(const InetAddress & addr) {
-	int ret = bind(_sockfd, (sockaddr*)addr.get_addr_ptr(), 
+	int ret = ::bind(_sockfd, (sockaddr*)addr.get_addr_ptr(), 
 				   sizeof(sockaddr));
 	if(ret == -1){
 		LogPrinter::export_log("error to bind", "log/socketLog.txt");
@@ -155,11 +160,16 @@ SocketClient::~SocketClient() {
 
 }
 
-void SocketClient::connect(const InetAddress & addr) {
-	int ret = ::connect(_sockfd, (sockaddr*)&addr, sizeof(addr));
+void SocketClient::connect_socket(const InetAddress & addr) {
+	std::cout << _sockfd << std::endl;
+	int ret = connect(_sockfd, (sockaddr*)addr.get_addr_ptr(), sizeof(struct sockaddr));
+	std::cout << "connect : " << ret << std::endl;
 	if(ret == -1) {
 		LogPrinter::export_log(
 				"fail to connect", "log/socketLog.txt");	
+	}else {
+		LogPrinter::export_log(
+				"success to connect", "log/socketLog.txt");	
 	}
 }
 

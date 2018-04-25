@@ -12,13 +12,13 @@
 #include "tcp.hpp"
 #include "epoll.hpp"
 class TcpServer {
+	typedef TcpConnection::TcpConnectionCallback TcpServerCallback;
 public:	
 	TcpServer(unsigned short port);
 	TcpServer(const char * ip,unsigned short port);
 	~TcpServer();
 	void start();
 	void stop();
-	typedef TcpConnection::TcpConnectionCallback TcpServerCallback;
 	void set_connection_callback(TcpServerCallback cb);
 	void set_message_callback(TcpServerCallback cb);
 	void set_close_callback(TcpServerCallback cb);

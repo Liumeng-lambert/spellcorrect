@@ -45,7 +45,7 @@ public:
 	SocketClient();
 	SocketClient(int fd);
 	~SocketClient();
-	void connect(const InetAddress & addr);
+	void connect_socket(const InetAddress & addr);
 	int fd();
 private:
 	int create_socket_fd();

@@ -30,12 +30,15 @@ _is_shutdown_write(false)
 {
 	/*set callback function*/
 	/*should bind to object*/
+	/*
 	set_connection_callback(std::bind(&TcpConnection::handle_connection_callback,
 							shared_from_this()));
 	set_message_callback(std::bind(&TcpConnection::handle_message_callback,
 						 shared_from_this()));
 	set_close_callback(std::bind(&TcpConnection::handle_close_callback,
 					   shared_from_this()));
+
+	*/
 }
 
 TcpConnection::~TcpConnection() {

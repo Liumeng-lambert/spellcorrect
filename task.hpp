@@ -14,7 +14,6 @@ public:
 	Task(){}
 	~Task(){}
 	virtual void process()=0;
-	virtual void process(Cache & cache)=0;
 };
 }
 #endif

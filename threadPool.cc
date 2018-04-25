@@ -9,9 +9,8 @@
 #include "threadPool.hpp"
 namespace spellCorrect{
 MyThread::MyThread(ThreadPool & thread_pool) 
-:_thread_pool(thread_pool),
- _cache(), 
- _thread(&ThreadPool::thread_func, &_thread_pool, std::ref(_cache))
+:_cache(), 
+ _thread(&ThreadPool::thread_func, &thread_pool, std::ref(_cache))
 {
 
 }
@@ -26,34 +25,6 @@ void MyThread::join(){
 
 Cache& MyThread::get_cache() {
 	return _cache;
-}
-
-MyTask::MyTask(const std::string& query_word, int peerfd)
-:_query_word(query_word), _peerfd(peerfd)
-{       
-}
-void MyTask::process(){
-
-}
-
-void MyTask::process(Cache & cache) {
-
-}
-
-void MyTask::query_index_table() {
-
-}
-
-void MyTask::statistic(std::set<int> & iset) {
-
-}
-
-int MyTask::distance(const std::string & rhs) {
-
-}
-
-void MyTask::response(Cache & cache) {
-
 }
 
 ThreadPool::ThreadPool(int thread_num)
@@ -93,16 +64,16 @@ void ThreadPool::stop(){
 	}
 }
 
-void ThreadPool::thread_func(Cache  &cache){
+void ThreadPool::thread_func(Cache& cache){
 	while(is_running()) {
-		Task *task = get_task();
+		Task task = get_task();
 		if(task){
-			task->process(cache);
+			task(cache);
 		}
 	}
 }
 
-void ThreadPool::add_task(Task * task){
+void ThreadPool::add_task(Task task){
 	std::unique_lock <std::mutex> lock(_mutex_lock);
 	/*can not contine if it is full
 	 and if it is empty, notify one after adding*/
@@ -116,7 +87,7 @@ void ThreadPool::add_task(Task * task){
 	}
 }
 
-Task* ThreadPool::get_task(){
+ThreadPool::Task ThreadPool::get_task(){
 	std::unique_lock <std::mutex> lock(_mutex_lock);
 	/*can not contine if it is empty
 	 and if it is full, notify one after poping*/
@@ -125,7 +96,7 @@ Task* ThreadPool::get_task(){
 	}else if(_task_que.size() == _thread_capacity){
 		_not_full.notify_one();
 	}
-	Task * tmp = _task_que.front();
+	Task tmp = _task_que.front();
 	_task_que.pop();
 	return tmp;
 }

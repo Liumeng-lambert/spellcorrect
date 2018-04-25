@@ -9,10 +9,13 @@
 #include "dictionary.hpp"
 #include "splitTool.hpp"
 #include "tcpserver.hpp"
+#include "spellcorrect.hpp"
+#include "index.hpp"
 
 int main(){
 	unsigned short port = 9009;
-	TcpServer* server = new TcpServer(port);
+	spellCorrect::Index *index = new spellCorrect::Index();
+	spellCorrect::SpellCorrectServer* server = new spellCorrect::SpellCorrectServer("config/config", *index);
 	server->start();
 	return 0;
 }
