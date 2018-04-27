@@ -17,6 +17,7 @@ public:
 	void read_from_file(const std::string & filename);
 	void write_to_file(const std::string & filename);
 	void update(const Cache & rhs);
+	std::string query_cache(std::string query_word);
 private:
 	std::unordered_map<std::string, std::string> _hash_map;
 

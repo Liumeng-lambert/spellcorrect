@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <cctype>
 #include "dictionary.hpp"
 #include "log.hpp"
 namespace spellCorrect{
@@ -55,6 +56,17 @@ DictProducer::DictProducer(const std::string& dir, SplitTool* splitTool)
 	store_dict("dict/dict_cn.txt");
 }
 
+void DictProducer::remove_punct(std::string &word) {
+	std::string ans = "";
+	for(auto c : word) {
+		/*TODO:special charactor input*/
+		if(isalpha(c)) {
+			ans += c;
+		}
+	}
+	word = ans;
+}
+
 void DictProducer::build_dict(){
 	LogPrinter::export_log("build dictionary", "log/log.txt");
 	for(auto i : _files) {
@@ -70,7 +82,11 @@ void DictProducer::build_dict(){
 		while(!istrm.eof()) {
 			std::string word;
 			while(istrm >> word) {
-				/*TODO:removal punctuations*/
+				/*removal punctuations*/
+				remove_punct(word);
+				if(word.empty()){
+					continue;
+				}
 				push_dict(word);
 			}
 		}
@@ -91,8 +107,7 @@ void DictProducer::store_dict(const char * filepath){
 		LogPrinter::export_log(info, "log/log.txt");
 	}else {
 		for(auto i : _dict) {
-			std::cout << i.first << std::endl;
-			s<< i.first << " : " << i.second << std::endl;
+			s<< i.first << " " << i.second << std::endl;
 		}
 	}
 	s.close();

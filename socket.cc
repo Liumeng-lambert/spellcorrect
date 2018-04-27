@@ -161,7 +161,6 @@ SocketClient::~SocketClient() {
 }
 
 void SocketClient::connect_socket(const InetAddress & addr) {
-	std::cout << _sockfd << std::endl;
 	int ret = connect(_sockfd, (sockaddr*)addr.get_addr_ptr(), sizeof(struct sockaddr));
 	std::cout << "connect : " << ret << std::endl;
 	if(ret == -1) {

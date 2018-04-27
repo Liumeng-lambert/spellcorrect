@@ -23,24 +23,28 @@ struct MyResult{
 	int _dist;
 	bool operator < (const MyResult & rhs) const{
 		if(_dist == rhs._dist){
-			return _freq < rhs._freq;
+			return _freq > rhs._freq;
 		}
-		return _dist < rhs._dist;
+		return _dist > rhs._dist;
 	}
 };
 
 class WordQuery{
 public:
-    WordQuery(Index &index);
+    WordQuery();
 	~WordQuery();
-	void execute(std::string query_word, Cache& cache);
+	std::string execute(std::string query_word, Cache& cache);
 private:
+	Index _index;
+	std::string _query_word;
+	const size_t _max_query_len;
     std::priority_queue<MyResult, 
 		          std::vector<MyResult> > _result_que;
-	void query_index_table(std::string query_word);
-    void statistic(std::set<int> & iset);
-    int distance(const std::string & rhs);
-    void response(Cache & cache);
+	std::string query_index_table();
+	/*caculate from reverse index*/
+	void statistic(std::set<int> & iset);
+	/*get edit-distance*/
+	int distance(const std::string & rhs);
 };
 
 class TimeThread {
@@ -57,7 +61,7 @@ private:
 
 class SpellCorrectServer {
 public:
-	SpellCorrectServer(const std::string & config_file, Index& index);
+	SpellCorrectServer(const std::string & config_file);
 	void start();
 	void on_connection(TcpConnectionPtr conn);
 	void on_message(TcpConnectionPtr conn);
@@ -68,6 +72,7 @@ private:
 	ThreadPool _threadpool;
 	WordQuery _query;
 	TimeThread _timer;
+	void query_response(std::string query_word, TcpConnectionPtr& conn, Cache &cache);
 };
 
 }

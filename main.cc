@@ -14,8 +14,7 @@
 
 int main(){
 	unsigned short port = 9009;
-	spellCorrect::Index *index = new spellCorrect::Index();
-	spellCorrect::SpellCorrectServer* server = new spellCorrect::SpellCorrectServer("config/config", *index);
+	spellCorrect::SpellCorrectServer* server = new spellCorrect::SpellCorrectServer("config/config");
 	server->start();
 	return 0;
 }

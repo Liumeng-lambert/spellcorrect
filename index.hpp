@@ -7,12 +7,22 @@
 #ifndef _SPELL_CORRECT_INDEX_H_
 #define _SPELL_CORRECT_INDEX_H_
 #include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+#include "log.hpp"
+
 namespace spellCorrect{
 /*reverse index*/
 class Index{
 public:
-	Index();
+	Index(const std::string dict_path);	
 	~Index();
+	const std::map<std::string, std::set<int> >& get_index() const;
+	const std::vector<std::pair<std::string, int> > &get_wordlist() const;
+private:
+	std::vector<std::pair<std::string, int> > _words_freq;
+	std::map<std::string, std::set<int> > _index;
 };
 
 }

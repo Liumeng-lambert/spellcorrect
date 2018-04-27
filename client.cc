@@ -31,18 +31,17 @@ void Client::start() {
 
 void Client::run_service() {
 	char buf[512];
-	int ret = read(0, buf, 512);
-	if(-1 == ret){
-        std::cout << "read error" << std::endl; 
-	}
-	ret = _socket_io.writen(buf, 512);
+	scanf("%s", buf);
+	int ret = _socket_io.writen(buf, sizeof(buf));
 	if(-1 == ret){
         std::cout << "write error" << std::endl; 
 	}
-	//while(1){
-		char tmp[512];
-		_socket_io.readline(tmp, 512);
-		std::cout << tmp << std::endl;
+	char tmp[512];
+	::memset(tmp, 0, sizeof(tmp));
+	//while(_socket_io.readn(tmp, 512)) {
+	while(strlen(tmp) == 0){
+		_socket_io.readn(tmp, sizeof(tmp));
+	}
 	//}
+	std::cout << tmp << std::endl;
 }
-

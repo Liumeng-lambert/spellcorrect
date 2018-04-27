@@ -48,14 +48,17 @@ TcpConnection::~TcpConnection() {
 }
 
 std::string TcpConnection::receive() {
-	char buf[65536];
+	char buf[512];
 	::memset(buf, 0, sizeof(buf));
-	_sockIO.readline(buf, sizeof(buf));
+	_sockIO.readn(buf, sizeof(buf));
 	return std::string(buf);
 }
 
 void TcpConnection::send(const std::string & msg) {
-	_sockIO.writen(msg.c_str(), msg.size());
+	//_sockIO.writen(msg.c_str(), strlen(msg.c_str()) + 1);
+	char buf[512];
+	strcpy(buf,msg.c_str());
+	_sockIO.writen(buf, sizeof(buf));
 }
 
 void TcpConnection::shutdown() {

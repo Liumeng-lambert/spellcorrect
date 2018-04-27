@@ -18,6 +18,7 @@ class DictProducer{
 public:
 	DictProducer(const std::string& dir);
 	DictProducer(const std::string& dir, SplitTool* splitTool);
+	static void remove_punct(std::string &word);
 	void build_dict();
 	void build_cn_dict();
 

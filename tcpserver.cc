@@ -25,7 +25,6 @@ TcpServer::~TcpServer() {
 }
 
 void TcpServer::start() {
-	std::cout << _sockfd.fd() << std::endl;
 	_sockfd.ready(_inet_addr);
 	
 	_epoller.set_connection_callback(_on_connection_cb);

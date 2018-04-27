@@ -47,5 +47,13 @@ void Cache::update(const Cache & rhs){
 	_hash_map = rhs._hash_map;
 }
 
+std::string Cache::query_cache(std::string query_word) {
+	if(_hash_map.find(query_word) != _hash_map.end()) {
+		return _hash_map[query_word];
+	}else{
+		return std::string("");
+	}
+}
+
 }
 
