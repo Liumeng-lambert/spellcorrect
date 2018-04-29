@@ -28,6 +28,8 @@ std::string WordQuery::execute(std::string query_word, Cache& cache) {
 	//not found in cache
 	if(ans.empty()) {
 		ans = query_index_table();
+		std::cout << query_word << " " << ans << std::endl;
+		cache.add_element(query_word, ans);
 	}
 	return ans;
 }
@@ -91,8 +93,9 @@ int WordQuery::distance(const std::string & rhs) {
 	return dis[lr - 1][lq - 1];
 }
 
-TimeThread::TimeThread() 
+TimeThread::TimeThread(std::function<void()> cb) 
 :_is_running(false),
+ _cb(cb),
  _timer(std::bind(&TimeThread::thread_func, this))
 {
 }
@@ -104,7 +107,6 @@ TimeThread::~TimeThread() {
 
 void TimeThread::start() {
 	_is_running = true;
-	thread_func();
 }
 
 bool TimeThread::is_running() {
@@ -112,9 +114,10 @@ bool TimeThread::is_running() {
 }
 
 void TimeThread::thread_func() {
-	while(_is_running) {
-		sleep(60);
-
+	//while(_is_running) {
+	while(1) {
+		sleep(6);
+		_cb();
 	}
 }
 
@@ -123,7 +126,7 @@ SpellCorrectServer::SpellCorrectServer(const std::string & config_file)
  _tcp_server(9009),
  _threadpool(),
  _query(),
- _timer()
+ _timer(std::bind(&ThreadPool::update_cache, &_threadpool))
 {
 	_tcp_server.set_connection_callback(std::bind(&SpellCorrectServer::on_connection, this, std::placeholders::_1 ));
 	_tcp_server.set_message_callback(std::bind(&SpellCorrectServer::on_message, this, std::placeholders::_1 ));
@@ -139,6 +142,7 @@ void SpellCorrectServer::start() {
 	std::cout << "server start!" << std::endl;
 	_threadpool.start();
 	_tcp_server.start();
+	_timer.start();
 }
 
 void SpellCorrectServer::on_connection(TcpConnectionPtr conn) {

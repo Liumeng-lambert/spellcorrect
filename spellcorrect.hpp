@@ -49,13 +49,14 @@ private:
 
 class TimeThread {
 public:
-	TimeThread();
+	TimeThread(std::function<void()> cb);
 	~TimeThread();
 	bool is_running();
 	void start();
 private:
 	void thread_func();
 	bool _is_running;
+	std::function<void()> _cb;
 	std::thread _timer;
 };
 

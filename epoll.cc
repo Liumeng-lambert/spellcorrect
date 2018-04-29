@@ -103,6 +103,7 @@ int EpollPoller::accept_connection(int listenfd) {
 }
 
 void EpollPoller::wait_epollfd() {
+	std::cout << _event_list.size() << std::endl;
 	int nfds = epoll_wait(_epollfd, &(*_event_list.begin()), _event_list.size(), -1);
 	for(int i = 0; i < nfds; ++i){
 		/*receive new connection request*/
@@ -110,6 +111,7 @@ void EpollPoller::wait_epollfd() {
 			handle_connection();
 		} else if(_event_list[i].events & EPOLLIN ) { 
 			/*have message to read socket*/
+			std::cout << _event_list[i].data.fd << std::endl;
 			handle_message(_event_list[i].data.fd);
 		} else if(_event_list[i].events & EPOLLOUT)  { 
 			/*have message to send，write to socket*/
@@ -144,6 +146,7 @@ void EpollPoller::handle_message(int peerfd) {
 			//should close the connection
 			del_epollfd(_epollfd, peerfd);
 			iter->second->handle_close_callback();
+			close(peerfd);
 			_conn_map.erase(iter);
 		}
 	}

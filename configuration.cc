@@ -18,13 +18,13 @@ Configuration::Configuration(const std::string& filepath)
 	}
 	while (!ifs.eof()) {
 		/*read config file*/
-		char buffer[100];
-        ifs.getline (buffer,100);
+		char buffer[256];
+        ifs.getline (buffer,256);
         std::stringstream strm(buffer, std::ios::binary);
-		char tmp1[100];
-		char tmp2[100];
+		char tmp1[128];
+		char tmp2[128];
 		sscanf(buffer, "%s:%s", tmp1, tmp2 );
-		std::pair<std::string, std::string> p;
+		std::pair<std::string, std::string> p (tmp1, tmp2);
 		_config_map.insert(p);
     }
 	ifs.close();

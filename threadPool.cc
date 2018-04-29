@@ -8,8 +8,8 @@
 #include <functional>
 #include "threadPool.hpp"
 namespace spellCorrect{
-MyThread::MyThread(ThreadPool & thread_pool) 
-:_cache(), 
+MyThread::MyThread(ThreadPool & thread_pool, Cache &cache) 
+:_cache(cache), 
  _thread(&ThreadPool::thread_func, &thread_pool, std::ref(_cache))
 {
 
@@ -28,7 +28,8 @@ Cache& MyThread::get_cache() {
 }
 
 ThreadPool::ThreadPool(int thread_num)
-:_is_running(false)
+:_main_cache(),
+ _is_running(false)
 {
 	_thread_capacity = thread_num;
 	_vec_thread.reserve(thread_num);
@@ -42,7 +43,7 @@ ThreadPool::~ThreadPool(){
 
 void ThreadPool::start(){
 	for(int i = 0; i < _thread_capacity; ++i) {
-		MyThread* p_thread = new MyThread(*this);
+		MyThread* p_thread = new MyThread(*this, _main_cache);
 		_vec_thread.push_back(p_thread);
 	}
 	_is_running = true;
@@ -99,6 +100,14 @@ ThreadPool::Task ThreadPool::get_task(){
 	Task tmp = _task_que.front();
 	_task_que.pop();
 	return tmp;
+}
+
+void ThreadPool::update_cache() {
+	for(int i = 0; i < _vec_thread.size(); ++i) {
+		Cache & cache = _vec_thread[i]->get_cache();
+		_main_cache.update(cache);
+	}
+	_main_cache.write_to_file("cache/cache.dat");
 }
 
 bool ThreadPool::is_running() {
